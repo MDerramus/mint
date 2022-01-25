@@ -5,6 +5,7 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./redux/store";
 import { Provider } from "react-redux";
 import "./styles/reset.css";
+import { Canvas } from "canvas";
 
 ReactDOM.render(
   <Provider store={store}>

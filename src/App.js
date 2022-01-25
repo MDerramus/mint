@@ -4,14 +4,14 @@ import { connect } from "./redux/blockchain/blockchainActions";
 import { fetchData } from "./redux/data/dataActions";
 import * as s from "./styles/globalStyles";
 import styled from "styled-components";
-
+import { Canvas } from "canvas";
 const truncate = (input, len) =>
   input.length > len ? `${input.substring(0, len)}...` : input;
 
 export const StyledButton = styled.button`
   padding: 10px;
-  border-radius: 50px;
-  border: none;
+  border-radius: 30px;
+  border:none;
   background-color: var(--secondary);
   padding: 10px;
   font-weight: bold;
@@ -29,27 +29,27 @@ export const StyledButton = styled.button`
 `;
 
 export const StyledRoundButton = styled.button`
-  padding: 10px;
-  border-radius: 100%;
-  border: none;
-  background-color: var(--primary);
-  padding: 10px;
-  font-weight: bold;
-  font-size: 15px;
-  color: var(--primary-text);
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
-  -webkit-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
-  -moz-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
-  :active {
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
+padding: 10px;
+border-radius: 100%;
+border: none;
+background-color: var(--primary);
+padding: 10px;
+font-weight: bold;
+font-size: 15px;
+color: var(--primary-text);
+width: 30px;
+height: 30px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
+-webkit-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
+-moz-box-shadow: 0px 4px 0px -2px rgba(250, 250, 250, 0.3);
+:active {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   }
 `;
 
@@ -62,29 +62,30 @@ export const ResponsiveWrapper = styled.div`
   width: 100%;
   @media (min-width: 767px) {
     flex-direction: row;
+
   }
 `;
-
+//banner
 export const StyledLogo = styled.img`
-  width: 200px;
-  @media (min-width: 767px) {
-    width: 300px;
+  width: 300px;
+  @media (min-width: 367px) {
+    width: 900px; 
   }
   transition: width 0.5s;
   transition: height 0.5s;
 `;
-
+//bordes gif
 export const StyledImg = styled.img`
   box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
-  border: 4px dashed var(--secondary);
+  border: 2px dashed var(--secondary);
   background-color: var(--accent);
-  border-radius: 100%;
+  border-radius: 10%;
   width: 200px;
-  @media (min-width: 900px) {
+  @media (min-width: 800px) {
     width: 250px;
   }
-  @media (min-width: 1000px) {
-    width: 300px;
+  @media (min-width: 900px) {
+    width: 410px;
   }
   transition: width 0.5s;
 `;
@@ -216,9 +217,9 @@ function App() {
             ai={"center"}
             style={{
               backgroundColor: "var(--accent)",
-              padding: 24,
-              borderRadius: 24,
-              border: "4px dashed var(--secondary)",
+              padding: 4,
+              borderRadius: 30,
+              border: "2px dashed var(--secondary)",
               boxShadow: "0px 5px 11px 2px rgba(0,0,0,0.7)",
             }}
           >
@@ -264,7 +265,18 @@ function App() {
                 onClick={(e) => {
                   window.open(CONFIG.MARKETPLACE_LINK, "_blank");
                 }}
-              >
+>
+                Discord
+                </StyledButton>
+                <StyledButton
+                  style={{
+                    margin: "5px",
+                  }}
+                  onClick={(e) => {
+                    window.open(CONFIG.MARKETPLACE_LINK2, "_blank");
+                  }}
+
+>
                 {CONFIG.MARKETPLACE}
               </StyledButton>
             </span>
@@ -286,19 +298,20 @@ function App() {
                   {CONFIG.MARKETPLACE}
                 </StyledLink>
               </>
+
             ) : (
               <>
                 <s.TextTitle
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
-                  1 {CONFIG.SYMBOL} costs {CONFIG.DISPLAY_COST}{" "}
+                  1 {CONFIG.SYMBOL} Cuesta {CONFIG.DISPLAY_COST}{" "}
                   {CONFIG.NETWORK.SYMBOL}.
                 </s.TextTitle>
                 <s.SpacerXSmall />
                 <s.TextDescription
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
-                  Excluding gas fees.
+                  Excluyendo tarifas de gas.
                 </s.TextDescription>
                 <s.SpacerSmall />
                 {blockchain.account === "" ||
@@ -310,7 +323,7 @@ function App() {
                         color: "var(--accent-text)",
                       }}
                     >
-                      Connect to the {CONFIG.NETWORK.NAME} network
+                      Conectese a la red {CONFIG.NETWORK.NAME} network
                     </s.TextDescription>
                     <s.SpacerSmall />
                     <StyledButton
@@ -414,9 +427,9 @@ function App() {
               color: "var(--primary-text)",
             }}
           >
-            Please make sure you are connected to the right network (
-            {CONFIG.NETWORK.NAME} Mainnet) and the correct address. Please note:
-            Once you make the purchase, you cannot undo this action.
+            Asegúrate de estar conectado a la red correcta. (
+            {CONFIG.NETWORK.NAME} Mainnet) y la dirección correcta. Tenga en cuenta:
+             Una vez que realice la compra, no podrá deshacer esta acción.
           </s.TextDescription>
           <s.SpacerSmall />
           <s.TextDescription
@@ -425,10 +438,23 @@ function App() {
               color: "var(--primary-text)",
             }}
           >
-            We have set the gas limit to {CONFIG.GAS_LIMIT} for the contract to
-            successfully mint your NFT. We recommend that you don't lower the
-            gas limit.
+            Hemos establecido el límite de gas en {CONFIG.GAS_LIMIT} para que el contrato
+             acuñe con éxito su NFT. Le recomendamos que no baje el
+             límite de gas.
           </s.TextDescription>
+
+          
+          <s.TextDescription
+            style={{
+              textAlign: "center",
+              color: "var(--secondary-text)",
+            }}
+          >
+           YETIMANIA CLUB ES UNA COLLECCION ECHA 100% EN ESPAÑOL APOYA NUESTA INICIATIVA
+          </s.TextDescription>
+
+
+
         </s.Container>
       </s.Container>
     </s.Screen>
