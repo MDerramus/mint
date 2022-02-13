@@ -69,7 +69,7 @@ export const ResponsiveWrapper = styled.div`
 export const StyledLogo = styled.img`
   width: 300px;
   @media (min-width: 367px) {
-    width: 900px; 
+    width: 1400px; 
   }
   transition: width 0.5s;
   transition: height 0.5s;
@@ -79,13 +79,13 @@ export const StyledImg = styled.img`
   box-shadow: 0px 5px 11px 2px rgba(0, 0, 0, 0.7);
   border: 2px dashed var(--secondary);
   background-color: var(--accent);
-  border-radius: 10%;
+  border-radius: 15%;
   width: 200px;
   @media (min-width: 800px) {
     width: 250px;
   }
   @media (min-width: 900px) {
-    width: 410px;
+    width: 310px;
   }
   transition: width 0.5s;
 `;
@@ -248,6 +248,7 @@ function App() {
                 textAlign: "center",
               }}
             >
+              
               <StyledButton
                 onClick={(e) => {
                   window.open("/config/roadmap.pdf", "_blank");
@@ -263,7 +264,8 @@ function App() {
                   margin: "5px",
                 }}
                 onClick={(e) => {
-                  window.open(CONFIG.MARKETPLACE_LINK, "_blank");
+                  window.open(CONFIG.MARKETPLACE_LINK2, "_blank");
+
                 }}
 >
                 Discord
@@ -273,11 +275,21 @@ function App() {
                     margin: "5px",
                   }}
                   onClick={(e) => {
-                    window.open(CONFIG.MARKETPLACE_LINK2, "_blank");
+                    window.open(CONFIG.MARKETPLACE_LINK, "_blank");
                   }}
-
 >
-                {CONFIG.MARKETPLACE}
+                  Opensea
+                  </StyledButton>
+                  <StyledButton
+                    style={{
+                      margin: "5px",
+                    }}
+                    onClick={(e) => {
+                      window.open(CONFIG.MARKETPLACE_LINK3, "_blank");
+                    }}
+  >
+Contrato
+{CONFIG.MARKETPLACE}
               </StyledButton>
             </span>
             <s.SpacerSmall />
@@ -294,7 +306,7 @@ function App() {
                   You can still find {CONFIG.NFT_NAME} on
                 </s.TextDescription>
                 <s.SpacerSmall />
-                <StyledLink target={"_blank"} href={CONFIG.MARKETPLACE_LINK}>
+                <StyledLink target={"_blank"} href={CONFIG.MARKETPLACE_LINK1}>
                   {CONFIG.MARKETPLACE}
                 </StyledLink>
               </>

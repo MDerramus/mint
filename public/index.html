@@ -1,307 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <base href="/" />
-    <link rel="icon" href="./favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <link rel="stylesheet" href="./config/theme.css" />
-    <link rel="apple-touch-icon" href="./logo192.png" />
-    
-   
-  
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="./manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>YETIMANIA CLUB</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.4.0/gsap.min.js"></script> 
-    <meta name="description" content="ACUÑA TU YETI ALGUNO TE AMARA" />
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-
-  
-
-    <div id="root"></div>
-    <canvas id="canvas"></canvas>
-<style> html, body {
-  height: 100%;
-}
-body {
-  margin: 0;
-
-
-}
-
-
-
-#canvas {
-  width: 100%;
-  height: 88%;
-}</style>
-
-
-<script> console.clear()
-  console.log('lsakdfalskjdflnksd')
-  
-  const config = {
-    src: "./personajes.png",
-    rows: 15,
-    cols: 7
-  }
-  
-  // UTILS
-  
-  const randomRange = (min, max) => min + Math.random() * (max - min)
-  
-  const randomIndex = (array) => randomRange(0, array.length) | 0
-  
-  const removeFromArray = (array, i) => array.splice(i, 1)[0]
-  
-  const removeItemFromArray = (array, item) => removeFromArray(array, array.indexOf(item))
-  
-  const removeRandomFromArray = (array) => removeFromArray(array, randomIndex(array))
-  
-  const getRandomFromArray = (array) => (
-    array[randomIndex(array) | 0]
-  )
-  
-  // TWEEN FACTORIES
-  
-  const resetPeep = ({ stage, peep }) => {
-    const direction = Math.random() > 0.5 ? 1 : -1
-    // using an ease function to skew random to lower values to help hide that peeps have no legs
-    const offsetY = 100 - 250 * gsap.parseEase('power2.in')(Math.random())
-    const startY = stage.height - peep.height + offsetY
-    let startX
-    let endX
-    
-    if (direction === -1) {
-      startX = -peep.width
-      endX = stage.width
-      peep.scaleX = 1
-    } else {
-      startX = stage.width + peep.width
-      endX = 0
-      peep.scaleX = -1
-    }
-    
-    peep.x = startX
-    peep.y = startY
-    peep.anchorY = startY
-    
-    return {
-      startX,
-      startY,
-      endX
-    }
-  }
-  
-  const normalWalk = ({ peep, props }) => {
-    const {
-      startX,
-      startY,
-      endX
-    } = props
-  
-    const xDuration = 20
-    const yDuration = 0.50
-    
-    const tl = gsap.timeline()
-    tl.timeScale(randomRange(0.5, 1.5))
-    tl.to(peep, {
-      duration: xDuration,
-      x: endX,
-      ease: 'none'
-    }, 0)
-    tl.to(peep, {
-      duration: yDuration,
-      repeat: xDuration / yDuration,
-      yoyo: true,
-      y: startY - 30
-    }, 0)
-      
-    return tl
-  }
-  
-  const walks = [
-    normalWalk,
-  ]
-  
-  // CLASSES
-  
-  class Peep {
-    constructor({
-      image,
-      rect,
-    }) {
-      this.image = image
-      this.setRect(rect)
-      
-      this.x = 0
-      this.y = 0
-      this.anchorY = 1
-      this.scaleX = 2
-      this.walk = null
-    }
-    
-    setRect (rect) {
-      this.rect = rect
-      this.width = rect[2]
-      this.height = rect[3]
-      
-      this.drawArgs = [
-        this.image,
-        ...rect,
-        0, 0, this.width, this.height
-      ]  
-    }
-    
-    render (ctx) {
-      ctx.save()
-      ctx.translate(this.x, this.y)
-      ctx.scale(this.scaleX, 1)
-      ctx.drawImage(...this.drawArgs)
-      ctx.restore()
-    }
-  }
-  
-  // MAIN
-  
-  const img = document.createElement('img')
-  img.onload = init
-  img.src = config.src
-  
-  const canvas = document.querySelector('#canvas')
-  const ctx = canvas.getContext('2d')
-  
-  const stage = {
-    width: 0,
-    height: 0,
-  }
-  
-  const allPeeps = []
-  const availablePeeps = []
-  const crowd = []
-  
-  function init () {  
-    createPeeps()
-    
-    // resize also (re)populates the stage
-    resize()
-  
-    gsap.ticker.add(render)
-    window.addEventListener('resize', resize)
-  }
-  
-  function createPeeps () {
-    const {
-      rows,
-      cols
-    } = config
-    const {
-      naturalWidth: width,
-      naturalHeight: height
-    } = img
-    const total = rows * cols
-    const rectWidth = width / rows
-    const rectHeight = height / cols
-    
-    for (let i = 0; i < total; i++) {
-      allPeeps.push(new Peep({
-        image: img,
-        rect: [
-          (i % rows) * rectWidth,
-          (i / rows | 0) * rectHeight,
-          rectWidth,
-          rectHeight,
-        ]
-      }))
-    }  
-  }
-  
-  function resize () {
-    stage.width = canvas.clientWidth
-    stage.height = canvas.clientHeight
-    canvas.width = stage.width * devicePixelRatio
-    canvas.height = stage.height * devicePixelRatio
-    
-    crowd.forEach((peep) => {
-      peep.walk.kill()
-    })
-    
-    crowd.length = 0
-    availablePeeps.length = 0
-    availablePeeps.push(...allPeeps)
-    
-    initCrowd()
-  }
-  
-  function initCrowd () {
-    while (availablePeeps.length) {
-      // setting random tween progress spreads the peeps out
-      addPeepToCrowd().walk.progress(Math.random())
-    }
-  }
-  
-  function addPeepToCrowd () {
-    const peep = removeRandomFromArray(availablePeeps)
-    const walk = getRandomFromArray(walks)({
-      peep,
-      props: resetPeep({
-        peep,
-        stage,
-      })
-    }).eventCallback('onComplete', () => {
-      removePeepFromCrowd(peep)
-      addPeepToCrowd()
-    })
-    
-    peep.walk = walk
-    
-    crowd.push(peep)
-    crowd.sort((a, b) => a.anchorY - b.anchorY)
-    
-    return peep
-  }
-  
-  function removePeepFromCrowd (peep) {
-    removeItemFromArray(crowd, peep)
-    availablePeeps.push(peep)
-  }
-  
-  function render () {
-    canvas.width = canvas.width
-    ctx.save()
-    ctx.scale(devicePixelRatio, devicePixelRatio)
-    
-    crowd.forEach((peep) => {
-      peep.render(ctx)
-    })
-    
-    ctx.restore()
-  }
-  </script>
-<center>
-  <font face="Comic Sans MS,arial,verdana">ACA RONCAMOS LOS YETIS</font>
-</center>
-<center>
-<a href="https://instagram.com/yetimaniaclub/"><img src="..//instagram.png"width="100" height="100" ></a>
-</center>
-<center>
-  <font face="Comic Sans MS,arial,verdana">YETIMANIA CLUB NFT TODOS SUS DERECHOS SON RESERVADOS INVIERTA CON PRECAUCION</font>
-</center>
-  </html>
-  
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>CoolCatsClub</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="#page-top">Cool Cats Club</a>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#about">RoadMap</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#projects">Metaverse</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#signup">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <div class="text-center">
+                        <h1 class="mx-auto my-0 text-uppercase">welcome to the club &nbsp;</h1>
+                        <h2 class="text-white-50 mx-auto mt-2 mb-5">We develop 1999 works of art with different rarities, none of our cats will be the same as another because of their special DNA.</h2>
+                        <a class="btn btn-primary" href="https://google.com">Mint Random</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- About-->
+        <section class="about-section text-center" id="about">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8">
+                        <h2 class="text-white mb-4">Roap Map</h2>
+                        <p class="text-white-50">
+                            know our roadmap
+                          <a href="https://google.com.ar">Lite Papper.</a>
+                            after reading the document you will realize that you did not choose your cat, he chose you
+                        </p>
+                    </div>
+                </div>
+                <img class="img-fluid" src="assets/img/Banner.png" alt="..." />
+            </div>
+        </section>
+        <!-- Projects-->
+        <section class="projects-section bg-light" id="projects">
+            <div class="container px-4 px-lg-5">
+                <!-- Featured Project Row-->
+                <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
+                    <div class="col-xl-8 col-lg-7"><img class="img-fluid mb-3 mb-lg-0" src="assets/img/metaverse.jpg" alt="..." /></div>
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="featured-text text-center text-lg-left">
+                            <h4>Metaverse</h4>
+                            <p class="text-black-50 mb-0">Cool Cats are not just beautiful images. They are animation ready and look amazing in high definition and we will upgrade them to 3D productions in the future. We are already working in partnership with existing Metaverse projects and attracting top talent to build on our strong artistic foundation. We will bring this feature to market sooner than expected.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project One Row-->
+                <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
+                    <div class="col-lg-6"><img class="img-fluid" src="assets/img/demo-image-01.jpg" alt="..." /></div>
+                    <div class="col-lg-6">
+                        <div class="bg-black text-center h-100 project">
+                            <div class="d-flex h-100">
+                                <div class="project-text w-100 my-auto text-center text-lg-left">
+                                    <h4 class="text-white">COMMON</h4>
+                                    <p class="mb-0 text-white-50">Don't let the word "common" fool you. Amazing, ultra-sharp features are often produced.</p>
+                                    <hr class="d-none d-lg-block mb-0 ms-0" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Two Row-->
+                <div class="row gx-0 justify-content-center">
+                    <div class="col-lg-6"><img class="img-fluid" src="assets/img/demo-image-02.jpg" alt="..." /></div>
+                    <div class="col-lg-6 order-lg-first">
+                        <div class="bg-black text-center h-100 project">
+                            <div class="d-flex h-100">
+                                <div class="project-text w-100 my-auto text-center text-lg-right">
+                                    <h4 class="text-white">Epic</h4>
+                                    <p class="mb-0 text-white-50">Very rare traits that you definitely won't see often!</p>
+                                    <hr class="d-none d-lg-block mb-0 me-0" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Signup-->
+        <section class="signup-section" id="signup">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5"> </div>
+            </div>
+        </section>
+        <!-- Contact-->
+        <section class="contact-section bg-black">
+            <div class="container px-4 px-lg-5">
+<div class="social d-flex justify-content-center">
+        <a class="mx-2" href="#!"><i class="fab fa-discord"></i></a>
+        <a class="mx-2" href="#!"><i class="fab fa-instagram"></i></a>
+        <a class="mx-2" href="#!"><i class="fab fa-github"></i></a>
+      </div>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; CoolCatsClub2021</div></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>

@@ -2,20 +2,20 @@
   "CONTRACT_ADDRESS": "0x831F898460247dF676Fc8919ca62EBb643db7E2f",
   "SCAN_LINK": "https://polygonscan.com/address/0x831F898460247dF676Fc8919ca62EBb643db7E2f",
   "NETWORK": {
-    "NAME": "Polygon",
-    "SYMBOL": "Matic",
-    "ID": 137
+    "NAME": "Binance",
+    "SYMBOL": "BSC",
+    "ID": 56
   },
   "NFT_NAME": "YETIMANIA CLUB",
   "SYMBOL": "YETI",
   "MAX_SUPPLY": 999,
-  "WEI_COST": 10000000000000000000,
+  "WEI_COST": 10000000000000000,
   "DISPLAY_COST": 10,
   "GAS_LIMIT": 285000,
-  "MARKETPLACE": "Opensea",
-  "MARKETPLACE_LINK": "https://discord.gg/TH2kjgp3",
-  "MARKETPLACE_LINK2": "http://opensea.io/collection/yetimaniaclub",
-
+ 
+  "MARKETPLACE_LINK": "https://opensea.io",
+  "MARKETPLACE_LINK2": "https://discord.gg/",
+  "MARKETPLACE_LINK3": "https://bscscan.com",
   "SHOW_BACKGROUND": true
   
 }
