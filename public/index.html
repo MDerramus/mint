@@ -1,137 +1,1222 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>CoolCatsClub</title>
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <!-- Font Awesome icons (free version)-->
-        <script src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" crossorigin="anonymous"></script>
-        <!-- Google fonts-->
-        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+
+ 
+ 
+ <!doctype html><html lang="en"><head><meta charset="utf-8"/>
+    <base href="/"/><link rel="icon" href="./favicon.ico"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="theme-color" content="#000000"/><link rel="stylesheet" href="./config/theme.css"/>
+    <link rel="apple-touch-icon" href="./logo192.png"/>
+    <link rel="manifest" href="./manifest.json"/>
+    <title>Dement cats society</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.4.0/gsap.min.js"></script>
+     <meta name="description" content="Mint your Stripes NFT"/>
+     <link href="/static/css/main.5c2f1e68.chunk.css" rel="stylesheet">
     </head>
-    <body id="page-top">
-        <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-            <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="#page-top">Cool Cats Club</a>
-                <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="#about">RoadMap</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#projects">Metaverse</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#signup">Contact</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Masthead-->
-        <header class="masthead">
-            <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
-                <div class="d-flex justify-content-center">
-                    <div class="text-center">
-                        <h1 class="mx-auto my-0 text-uppercase">welcome to the club &nbsp;</h1>
-                        <h2 class="text-white-50 mx-auto mt-2 mb-5">We develop 1999 works of art with different rarities, none of our cats will be the same as another because of their special DNA.</h2>
-                        <a class="btn btn-primary" href="https://google.com">Mint Random</a>
+    <body><noscript>You need to enable JavaScript to run this app.</noscript>
+   <div id="root"></div>
+   
+  
+  </body>
+  <style>
+     html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+    }
+    
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  
+  
+  <script>
+  console.clear()
+console.log('lsakdfalskjdflnksd')
+
+const config = {
+  src: './open-peeps-sheet.png',
+  rows: 15,
+  cols: 7
+}
+
+// UTILS
+
+const randomRange = (min, max) => min + Math.random() * (max - min)
+
+const randomIndex = (array) => randomRange(0, array.length) | 0
+
+const removeFromArray = (array, i) => array.splice(i, 1)[0]
+
+const removeItemFromArray = (array, item) => removeFromArray(array, array.indexOf(item))
+
+const removeRandomFromArray = (array) => removeFromArray(array, randomIndex(array))
+
+const getRandomFromArray = (array) => (
+  array[randomIndex(array) | 0]
+)
+
+// TWEEN FACTORIES
+
+const resetPeep = ({ stage, peep }) => {
+  const direction = Math.random() > 0.5 ? 1 : -1
+  // using an ease function to skew random to lower values to help hide that peeps have no legs
+  const offsetY = 100 - 250 * gsap.parseEase('power2.in')(Math.random())
+  const startY = stage.height - peep.height + offsetY
+  let startX
+  let endX
+  
+  if (direction === 1) {
+    startX = -peep.width
+    endX = stage.width
+    peep.scaleX = 1
+  } else {
+    startX = stage.width + peep.width
+    endX = 0
+    peep.scaleX = -1
+  }
+  
+  peep.x = startX
+  peep.y = startY
+  peep.anchorY = startY
+  
+  return {
+    startX,
+    startY,
+    endX
+  }
+}
+
+const normalWalk = ({ peep, props }) => {
+  const {
+    startX,
+    startY,
+    endX
+  } = props
+
+  const xDuration = 10
+  const yDuration = 0.25
+  
+  const tl = gsap.timeline()
+  tl.timeScale(randomRange(0.5, 1.5))
+  tl.to(peep, {
+    duration: xDuration,
+    x: endX,
+    ease: 'none'
+  }, 0)
+  tl.to(peep, {
+    duration: yDuration,
+    repeat: xDuration / yDuration,
+    yoyo: true,
+    y: startY - 10
+  }, 0)
+    
+  return tl
+}
+
+const walks = [
+  normalWalk,
+]
+
+// CLASSES
+
+class Peep {
+  constructor({
+    image,
+    rect,
+  }) {
+    this.image = image
+    this.setRect(rect)
+    
+    this.x = 0
+    this.y = 0
+    this.anchorY = 0
+    this.scaleX = 1
+    this.walk = null
+  }
+  
+  setRect (rect) {
+    this.rect = rect
+    this.width = rect[2]
+    this.height = rect[3]
+    
+    this.drawArgs = [
+      this.image,
+      ...rect,
+      0, 0, this.width, this.height
+    ]  
+  }
+  
+  render (ctx) {
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    ctx.scale(this.scaleX, 1)
+    ctx.drawImage(...this.drawArgs)
+    ctx.restore()
+  }
+}
+
+// MAIN
+
+const img = document.createElement('img')
+img.onload = init
+img.src = config.src
+
+const canvas = document.querySelector('#canvas')
+const ctx = canvas.getContext('2d')
+
+const stage = {
+  width: 0,
+  height: 0,
+}
+
+const allPeeps = []
+const availablePeeps = []
+const crowd = []
+
+function init () {  
+  createPeeps()
+  
+  // resize also (re)populates the stage
+  resize()
+
+  gsap.ticker.add(render)
+  window.addEventListener('resize', resize)
+}
+
+function createPeeps () {
+  const {
+    rows,
+    cols
+  } = config
+  const {
+    naturalWidth: width,
+    naturalHeight: height
+  } = img
+  const total = rows * cols
+  const rectWidth = width / rows
+  const rectHeight = height / cols
+  
+  for (let i = 0; i < total; i++) {
+    allPeeps.push(new Peep({
+      image: img,
+      rect: [
+        (i % rows) * rectWidth,
+        (i / rows | 0) * rectHeight,
+        rectWidth,
+        rectHeight,
+      ]
+    }))
+  }  
+}
+
+function resize () {
+  stage.width = canvas.clientWidth
+  stage.height = canvas.clientHeight
+  canvas.width = stage.width * devicePixelRatio
+  canvas.height = stage.height * devicePixelRatio
+  
+  crowd.forEach((peep) => {
+    peep.walk.kill()
+  })
+  
+  crowd.length = 0
+  availablePeeps.length = 0
+  availablePeeps.push(...allPeeps)
+  
+  initCrowd()
+}
+
+function initCrowd () {
+  while (availablePeeps.length) {
+    // setting random tween progress spreads the peeps out
+    addPeepToCrowd().walk.progress(Math.random())
+  }
+}
+
+function addPeepToCrowd () {
+  const peep = removeRandomFromArray(availablePeeps)
+  const walk = getRandomFromArray(walks)({
+    peep,
+    props: resetPeep({
+      peep,
+      stage,
+    })
+  }).eventCallback('onComplete', () => {
+    removePeepFromCrowd(peep)
+    addPeepToCrowd()
+  })
+  
+  peep.walk = walk
+  
+  crowd.push(peep)
+  crowd.sort((a, b) => a.anchorY - b.anchorY)
+  
+  return peep
+}
+
+function removePeepFromCrowd (peep) {
+  removeItemFromArray(crowd, peep)
+  availablePeeps.push(peep)
+}
+
+function render () {
+  canvas.width = canvas.width
+  ctx.save()
+  ctx.scale(devicePixelRatio, devicePixelRatio)
+  
+  crowd.forEach((peep) => {
+    peep.render(ctx)
+  })
+  
+  ctx.restore()
+}
+  console.clear(),console.log("lsakdfalskjdflnksd");const config={src:"./personajes.png",rows:15,cols:7},randomRange=(e,a)=>e+Math.random()*(a-e),randomIndex=e=>0|randomRange(0,e.length),removeFromArray=(e,a)=>e.splice(a,1)[0],removeItemFromArray=(e,a)=>removeFromArray(e,e.indexOf(a)),removeRandomFromArray=e=>removeFromArray(e,randomIndex(e)),getRandomFromArray=e=>e[0|randomIndex(e)],resetPeep=({stage:e,peep:a})=>{const t=Math.random()>1.5?1:-1,r=100-250*gsap.parseEase("power2.in")(Math.random()),o=e.height-a.height+r;let s,n;return 1===t?(s=-a.width,n=e.width,a.scaleX=1):(s=e.width+a.width,n=0,a.scaleX=-1),a.x=s,a.y=o,a.anchorY=o,{startX:s,startY:o,endX:n}},normalWalk=({peep:e,props:a})=>{const{startX:t,startY:r,endX:o}=a,s=gsap.timeline();return s.timeScale(randomRange(.5,1.5)),s.to(e,{duration:10,x:o,ease:"none"},0),s.to(e,{duration:.25,repeat:40,yoyo:!0,y:r-10},0),s},walks=[normalWalk];class Peep{constructor({image:e,rect:a}){this.image=e,this.setRect(a),this.x=0,this.y=0,this.anchorY=0,this.scaleX=1,this.walk=null}setRect(e){this.rect=e,this.width=e[2],this.height=e[3],this.drawArgs=[this.image,...e,0,0,this.width,this.height]}render(e){e.save(),e.translate(this.x,this.y),e.scale(this.scaleX,1),e.drawImage(...this.drawArgs),e.restore()}}const img=document.createElement("img");img.onload=init,img.src=config.src;const canvas=document.querySelector("#canvas"),ctx=canvas.getContext("2d"),stage={width:0,height:0},allPeeps=[],availablePeeps=[],crowd=[];function init(){createPeeps(),resize(),gsap.ticker.add(render),window.addEventListener("resize",resize)}function createPeeps(){const{rows:e,cols:a}=config,{naturalWidth:t,naturalHeight:r}=img,o=e*a,s=t/e,n=r/a;for(let a=0;a<o;a++)allPeeps.push(new Peep({image:img,rect:[a%e*s,(a/e|0)*n,s,n]}))}function resize(){stage.width=canvas.clientWidth,stage.height=canvas.clientHeight,canvas.width=stage.width*devicePixelRatio,canvas.height=stage.height*devicePixelRatio,crowd.forEach(e=>{e.walk.kill()}),crowd.length=0,availablePeeps.length=0,availablePeeps.push(...allPeeps),initCrowd()}function initCrowd(){for(;availablePeeps.length;)addPeepToCrowd().walk.progress(Math.random())}function addPeepToCrowd(){const e=removeFromArray(a=availablePeeps,randomIndex(a));var a;const t=getRandomFromArray(walks)({peep:e,props:resetPeep({peep:e,stage:stage})}).eventCallback("onComplete",()=>{removePeepFromCrowd(e),addPeepToCrowd()});return e.walk=t,crowd.push(e),crowd.sort((e,a)=>e.anchorY-a.anchorY),e}function removePeepFromCrowd(e){var a,t;t=e,removeFromArray(a=crowd,a.indexOf(t)),availablePeeps.push(e)}function render(){canvas.width=canvas.width,ctx.save(),ctx.scale(devicePixelRatio,devicePixelRatio),crowd.forEach(e=>{e.render(ctx)}),ctx.restore()}</script></body></html><script>!function(e){function t(t){for(var n,i,a=t[0],c=t[1],l=t[2],f=0,s=[];f<a.length;f++)i=a[f],Object.prototype.hasOwnProperty.call(o,i)&&o[i]&&s.push(o[i][0]),o[i]=0;for(n in c)Object.prototype.hasOwnProperty.call(c,n)&&(e[n]=c[n]);for(p&&p(t);s.length;)s.shift()();return u.push.apply(u,l||[]),r()}function r(){for(var e,t=0;t<u.length;t++){for(var r=u[t],n=!0,a=1;a<r.length;a++){var c=r[a];0!==o[c]&&(n=!1)}n&&(u.splice(t--,1),e=i(i.s=r[0]))}return e}var n={},o={1:0},u=[];function i(t){if(n[t])return n[t].exports;var r=n[t]={i:t,l:!1,exports:{}};return e[t].call(r.exports,r,r.exports,i),r.l=!0,r.exports}i.e=function(e){var t=[],r=o[e];if(0!==r)if(r)t.push(r[2]);else{var n=new Promise((function(t,n){r=o[e]=[t,n]}));t.push(r[2]=n);var u,a=document.createElement("script");a.charset="utf-8",a.timeout=120,i.nc&&a.setAttribute("nonce",i.nc),a.src=function(e){return i.p+"static/js/"+({}[e]||e)+"."+{3:"03edd102"}[e]+".chunk.js"}(e);var c=new Error;u=function(t){a.onerror=a.onload=null,clearTimeout(l);var r=o[e];if(0!==r){if(r){var n=t&&("load"===t.type?"missing":t.type),u=t&&t.target&&t.target.src;c.message="Loading chunk "+e+" failed.\n("+n+": "+u+")",c.name="ChunkLoadError",c.type=n,c.request=u,r[1](c)}o[e]=void 0}};var l=setTimeout((function(){u({type:"timeout",target:a})}),12e4);a.onerror=a.onload=u,document.head.appendChild(a)}return Promise.all(t)},i.m=e,i.c=n,i.d=function(e,t,r){i.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},i.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},i.t=function(e,t){if(1&t&&(e=i(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(i.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var n in e)i.d(r,n,function(t){return e[t]}.bind(null,n));return r},i.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return i.d(t,"a",t),t},i.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},i.p="/",i.oe=function(e){throw console.error(e),e};var a=this.webpackJsonpthe_stripes_nft_dapp=this.webpackJsonpthe_stripes_nft_dapp||[],c=a.push.bind(a);a.push=t,a=a.slice();for(var l=0;l<a.length;l++)t(a[l]);var p=c;r()}([])</script><script src="/static/js/2.44b16511.chunk.js"></script><script src="/static/js/main.f9747321.chunk.js">
+  console.clear()
+console.log('lsakdfalskjdflnksd')
+
+const config = {
+  src: "./open-peeps-sheet.png'",
+  rows: 15,
+  cols: 7
+}
+
+// UTILS
+
+const randomRange = (min, max) => min + Math.random() * (max - min)
+
+const randomIndex = (array) => randomRange(0, array.length) | 0
+
+const removeFromArray = (array, i) => array.splice(i, 1)[0]
+
+const removeItemFromArray = (array, item) => removeFromArray(array, array.indexOf(item))
+
+const removeRandomFromArray = (array) => removeFromArray(array, randomIndex(array))
+
+const getRandomFromArray = (array) => (
+  array[randomIndex(array) | 0]
+)
+
+// TWEEN FACTORIES
+
+const resetPeep = ({ stage, peep }) => {
+  const direction = Math.random() > 0.5 ? 1 : -1
+  // using an ease function to skew random to lower values to help hide that peeps have no legs
+  const offsetY = 100 - 250 * gsap.parseEase('power2.in')(Math.random())
+  const startY = stage.height - peep.height + offsetY
+  let startX
+  let endX
+  
+  if (direction === 1) {
+    startX = -peep.width
+    endX = stage.width
+    peep.scaleX = 1
+  } else {
+    startX = stage.width + peep.width
+    endX = 0
+    peep.scaleX = -1
+  }
+  
+  peep.x = startX
+  peep.y = startY
+  peep.anchorY = startY
+  
+  return {
+    startX,
+    startY,
+    endX
+  }
+}
+
+const normalWalk = ({ peep, props }) => {
+  const {
+    startX,
+    startY,
+    endX
+  } = props
+
+  const xDuration = 10
+  const yDuration = 0.25
+  
+  const tl = gsap.timeline()
+  tl.timeScale(randomRange(0.5, 1.5))
+  tl.to(peep, {
+    duration: xDuration,
+    x: endX,
+    ease: 'none'
+  }, 0)
+  tl.to(peep, {
+    duration: yDuration,
+    repeat: xDuration / yDuration,
+    yoyo: true,
+    y: startY - 10
+  }, 0)
+    
+  return tl
+}
+
+const walks = [
+  normalWalk,
+]
+
+// CLASSES
+
+class Peep {
+  constructor({
+    image,
+    rect,
+  }) {
+    this.image = image
+    this.setRect(rect)
+    
+    this.x = 0
+    this.y = 0
+    this.anchorY = 0
+    this.scaleX = 1
+    this.walk = null
+  }
+  
+  setRect (rect) {
+    this.rect = rect
+    this.width = rect[2]
+    this.height = rect[3]
+    
+    this.drawArgs = [
+      this.image,
+      ...rect,
+      0, 0, this.width, this.height
+    ]  
+  }
+  
+  render (ctx) {
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    ctx.scale(this.scaleX, 1)
+    ctx.drawImage(...this.drawArgs)
+    ctx.restore()
+  }
+}
+
+// MAIN
+
+const img = document.createElement('img')
+img.onload = init
+img.src = config.src
+
+const canvas = document.querySelector('#canvas')
+const ctx = canvas.getContext('2d')
+
+const stage = {
+  width: 0,
+  height: 0,
+}
+
+const allPeeps = []
+const availablePeeps = []
+const crowd = []
+
+function init () {  
+  createPeeps()
+  
+  // resize also (re)populates the stage
+  resize()
+
+  gsap.ticker.add(render)
+  window.addEventListener('resize', resize)
+}
+
+function createPeeps () {
+  const {
+    rows,
+    cols
+  } = config
+  const {
+    naturalWidth: width,
+    naturalHeight: height
+  } = img
+  const total = rows * cols
+  const rectWidth = width / rows
+  const rectHeight = height / cols
+  
+  for (let i = 0; i < total; i++) {
+    allPeeps.push(new Peep({
+      image: img,
+      rect: [
+        (i % rows) * rectWidth,
+        (i / rows | 0) * rectHeight,
+        rectWidth,
+        rectHeight,
+      ]
+    }))
+  }  
+}
+
+function resize () {
+  stage.width = canvas.clientWidth
+  stage.height = canvas.clientHeight
+  canvas.width = stage.width * devicePixelRatio
+  canvas.height = stage.height * devicePixelRatio
+  
+  crowd.forEach((peep) => {
+    peep.walk.kill()
+  })
+  
+  crowd.length = 0
+  availablePeeps.length = 0
+  availablePeeps.push(...allPeeps)
+  
+  initCrowd()
+}
+
+function initCrowd () {
+  while (availablePeeps.length) {
+    // setting random tween progress spreads the peeps out
+    addPeepToCrowd().walk.progress(Math.random())
+  }
+}
+
+function addPeepToCrowd () {
+  const peep = removeRandomFromArray(availablePeeps)
+  const walk = getRandomFromArray(walks)({
+    peep,
+    props: resetPeep({
+      peep,
+      stage,
+    })
+  }).eventCallback('onComplete', () => {
+    removePeepFromCrowd(peep)
+    addPeepToCrowd()
+  })
+  
+  peep.walk = walk
+  
+  crowd.push(peep)
+  crowd.sort((a, b) => a.anchorY - b.anchorY)
+  
+  return peep
+}
+
+function removePeepFromCrowd (peep) {
+  removeItemFromArray(crowd, peep)
+  availablePeeps.push(peep)
+}
+
+function render () {
+  canvas.width = canvas.width
+  ctx.save()
+  ctx.scale(devicePixelRatio, devicePixelRatio)
+  
+  crowd.forEach((peep) => {
+    peep.render(ctx)
+  })
+  
+  ctx.restore()
+}
+  </script>
+<!doctype html>
+<html lang="en">
+  <head>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dement Cats Society</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.4.0/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/unicons.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+
+    <!-- MAIN STYLE -->
+    <link rel="stylesheet" href="css/tooplate-style.css">
+    
+<!--
+
+Tooplate 2115 Marvel
+
+https://www.tooplate.com/view/2115-marvel
+
+-->
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <!-- MENU -->
+    <nav class="navbar navbar-expand-sm navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class='uil uil-users-alt'></i> Dement Cats Society</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a href="#about" class="nav-link"><span data-hover="About">About</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#Gallery" class="nav-link"><span data-hover="Gallery">Gallery</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#resume" class="nav-link"><span data-hover="Resume">Resume</span></a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#Team" class="nav-link"><span data-hover="Team">Team</span></a>
+                  </li>
+                  <li class="nav-item">
+                        <a href="#Tokenomics" class="nav-link"><span data-hover="Tokenomics">Tokenomics</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#History" class="nav-link"><span data-hover="History">History</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link"><span data-hover="Contact">Contact</span></a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-lg-auto">
+                    <div class="ml-lg-4">
+                      <div class="color-mode d-lg-flex justify-content-center align-items-center">
+                        <i class="color-mode-icon"></i>
+                        Color mode
+                      </div>
                     </div>
-                </div>
+                </ul>
             </div>
-        </header>
-        <!-- About-->
-        <section class="about-section text-center" id="about">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-8">
-                        <h2 class="text-white mb-4">Roap Map</h2>
-                        <p class="text-white-50">
-                            know our roadmap
-                          <a href="https://google.com.ar">Lite Papper.</a>
-                            after reading the document you will realize that you did not choose your cat, he chose you
-                        </p>
-                    </div>
-                </div>
-                <img class="img-fluid" src="assets/img/Banner.png" alt="..." />
-            </div>
-        </section>
-        <!-- Projects-->
-        <section class="projects-section bg-light" id="projects">
-            <div class="container px-4 px-lg-5">
-                <!-- Featured Project Row-->
-                <div class="row gx-0 mb-4 mb-lg-5 align-items-center">
-                    <div class="col-xl-8 col-lg-7"><img class="img-fluid mb-3 mb-lg-0" src="assets/img/metaverse.jpg" alt="..." /></div>
-                    <div class="col-xl-4 col-lg-5">
-                        <div class="featured-text text-center text-lg-left">
-                            <h4>Metaverse</h4>
-                            <p class="text-black-50 mb-0">Cool Cats are not just beautiful images. They are animation ready and look amazing in high definition and we will upgrade them to 3D productions in the future. We are already working in partnership with existing Metaverse projects and attracting top talent to build on our strong artistic foundation. We will bring this feature to market sooner than expected.</p>
+        </div>
+    </nav>
+
+    <!-- ABOUT -->
+    <section class="about full-screen d-lg-flex justify-content-center align-items-center" id="about">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-7 col-md-12 col-12 d-flex align-items-center">
+                    <div class="about-text">
+                        <small class="small-text">Welcome to <span class="mobile-block">Dement Cats Society</span></small>
+                        <h1 class="animated animated-text">
+                            <span class="mr-2">An NFt Collection</span>
+                                <div class="animated-info">
+                                    <span class="animated-item">Dement</span>
+                                    <span class="animated-item">Insane</span>
+                                    <span class="animated-item">Mad</span>
+                                    
+                                </div>
+                        </h1>
+
+                        <p>We have built a crazy collection of 4321 NFTs with different DNA, none will look like the other due to their particular rarities.</p>
+                        
+                        <div class="custom-btn-group mt-4">
+                          <a href="#" class="btn mr-lg-2 custom-btn"><i class='uil uil-file-alt'></i> Download Road Map</a>
+                          <a href="#contact" class="btn custom-btn custom-btn-bg custom-btn-link">The Artist </a>
                         </div>
                     </div>
                 </div>
-                <!-- Project One Row-->
-                <div class="row gx-0 mb-5 mb-lg-0 justify-content-center">
-                    <div class="col-lg-6"><img class="img-fluid" src="assets/img/demo-image-01.jpg" alt="..." /></div>
-                    <div class="col-lg-6">
-                        <div class="bg-black text-center h-100 project">
-                            <div class="d-flex h-100">
-                                <div class="project-text w-100 my-auto text-center text-lg-left">
-                                    <h4 class="text-white">COMMON</h4>
-                                    <p class="mb-0 text-white-50">Don't let the word "common" fool you. Amazing, ultra-sharp features are often produced.</p>
-                                    <hr class="d-none d-lg-block mb-0 ms-0" />
-                                </div>
+
+                <div class="col-lg-5 col-md-12 col-12">
+                    <div class="about-image svg">
+                        <img src="images/undraw/GOLD.png" class="img-fluid" alt="svg image">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="project py-5" id="Gallery">
+        <div class="container">
+                
+                <div class="row">
+                  <div class="col-lg-11 text-center mx-auto col-12">
+
+                      <div class="col-lg-8 mx-auto">
+                        <h2>GRAND WINNER AND IF YOU CAPTURE AN EPIC ART</h2>
+                      </div>
+
+                      <div class="owl-carousel owl-theme">
+                        <div class="item">
+                          <div class="project-info">
+                            <img src="images/project/1.png" class="img-fluid" alt="project image">
+                          </div>
+                        </div>
+
+                        <div class="item">
+                          <div class="project-info">
+                            <img src="images/project/2.png" class="img-fluid" alt="project image">
+                          </div>
+                        </div>
+
+                        <div class="item">
+                          <div class="project-info">
+                            <img src="images/project/3.png" class="img-fluid" alt="project image">
+                          </div>
+                        </div>
+
+                        <div class="item">
+                          <div class="project-info">
+                            <img src="images/project/4.png" class="img-fluid" alt="project image">
+                          </div>
+                        </div>
+
+                        <div class="item">
+                          <div class="project-info">
+                            <img src="images/project/5.png" class="img-fluid" alt="project image">
+
+                          </div>
+                        </div>
+                      </div>
+
+                  </div>
+                </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="resume py-5 d-lg-flex justify-content-center align-items-center" id="resume">
+        <div class="container">
+            <div class="row">
+              <h2 class="mb-4">Roadmap</h2>
+              <img src="images/undraw/roadmap.png" width="1150" height="750"  alt="" class="img-fluid">
+                <div class="col-lg-6 col-12">
+                  <h2 class="mb-4">ERC721</h2>
+
+                    <div class="timeline">
+                        <div class="timeline-wrapper">
+                             <div class="timeline-yr">
+                                  <span>Q1 2021 </span>
+                             </div>
+                             <div class="timeline-info">
+                                  <h3><span>Art</span> <small>Construction</small></h3>
+                                  <p>We apply the best design features to obtain an excellent drawing quality with very fine and attractive outlines. The collection has 7 layers and more than 700 components, which makes the works amazing.</p>
+                             </div>
+                        </div>
+
+                        <div class="timeline-wrapper">
+                            <div class="timeline-yr">
+                                <span>Q2 2022</span>
+                            </div>
+                            <div class="timeline-info">
+                                <h3><span>Smart Contract</span><small>Solidity</small></h3>
+                                <p>Our smart contract has several functions Eg: (Anti Whale, Do not reveal Function, New BaseURI, white lists) among others, 15 works will be minted in its genesis block as samples in opensea.</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Project Two Row-->
-                <div class="row gx-0 justify-content-center">
-                    <div class="col-lg-6"><img class="img-fluid" src="assets/img/demo-image-02.jpg" alt="..." /></div>
-                    <div class="col-lg-6 order-lg-first">
-                        <div class="bg-black text-center h-100 project">
-                            <div class="d-flex h-100">
-                                <div class="project-text w-100 my-auto text-center text-lg-right">
-                                    <h4 class="text-white">Epic</h4>
-                                    <p class="mb-0 text-white-50">Very rare traits that you definitely won't see often!</p>
-                                    <hr class="d-none d-lg-block mb-0 me-0" />
-                                </div>
+
+                        <div class="timeline-wrapper">
+                            <div class="timeline-yr">
+                                <span>Q3 2022</span>
+                            </div>
+                            <div class="timeline-info">
+                                <h3><span>Site Web Mint</h3>
+                                <p>The new Dement Cats Society minting site is more intuitive, fresh and modern, which will allow us to better display our works.</p>
                             </div>
                         </div>
+                        
+                        <div class="timeline-wrapper">
+                            <div class="timeline-yr">
+                                <span>Q4 2022 </span>
+                            </div>
+                            <div class="timeline-info">
+                                <h3><span>Opensea<small>Genesis</small></h3>
+                                <p>the works that are in the genesis block of opensea will be granted to subscribers of our social networks (Twitter, instagram, Discord) find out more by following our networks.</p>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
+                <div class="col-lg-6 col-12">
+                  <h2 class="mb-4 mobile-mt-2">ERC20</h2>
+
+                    <div class="timeline">
+                        <div class="timeline-wrapper">
+                             <div class="timeline-yr">
+                                  <span>Q5 2022</span>
+                             </div>
+                             <div class="timeline-info">
+                                  <h3><span>Rewards</span><small>Social media promotion</small></h3>
+                                  <p>35% of the minting investment will be allocated to merchandising, we are working together with shopify to have everything ready before the benefit program we will be giving away several products with amazing illustrations.</p>
+                             </div>
+                        </div>
+
+                        <div class="timeline-wrapper">
+                            <div class="timeline-yr">
+                                <span>Q6 2022</span>
+                            </div>
+                            <div class="timeline-info">
+                                <h3><span> Repurchase</span><small>low value</small></h3>
+                                <p> Dement Cat Society investors do not have to worry about losing crypto assets. We have a user protection initiative. We will buy all the works that are below the minting price. we will use fundraising funds to return your coins (but don't worry, that will never happen) we are sure of success</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-wrapper">
+                            <div class="timeline-yr">
+                                <span>Q7 2023</span>
+                            </div>
+                            <div class="timeline-info">
+                                <h3><span>Metaverse</span><small>Coming soon</small></h3>
+                                <p>do not despair we will do more crazy things remember that we are not mentally healthy.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                
             </div>
-        </section>
-        <!-- Signup-->
-        <section class="signup-section" id="signup">
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5"> </div>
-            </div>
-        </section>
-        <!-- Contact-->
-        <section class="contact-section bg-black">
-            <div class="container px-4 px-lg-5">
-<div class="social d-flex justify-content-center">
-        <a class="mx-2" href="#!"><i class="fab fa-discord"></i></a>
-        <a class="mx-2" href="#!"><i class="fab fa-instagram"></i></a>
-        <a class="mx-2" href="#!"><i class="fab fa-github"></i></a>
-      </div>
-            </div>
-        </section>
-        <!-- Footer-->
-        <footer class="footer bg-black small text-center text-white-50"><div class="container px-4 px-lg-5">Copyright &copy; CoolCatsClub2021</div></footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        </div>
+    </section>
+   <section> 
+    <body> 
+     
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      &nbsp; 
+      &nbsp;
+
+
+
     </body>
+    <!-- ======= Team Section ======= -->
+ <section id="Team" class="Team">
+  <div class="container">
+<center> 
+    <div class="section-title" data-aos="fade-up">
+      <h1>Team</h1>
+      <p>Our crazy team</p>
+    </div>
+  </center>
+    <div class="row" data-aos="fade-left">
+      
+      <div class="col-lg-3 col-md-6">
+        <div class="member" data-aos="zoom-in" data-aos-delay="100">
+          <div class="pic"><img src="assets/img/team/team-1.png" class="img-fluid" alt=""></div>
+          <div class="member-info">
+            <center>
+            <h4>Mauricio Erramuspe</h4>
+            <span>Developers</span>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+</center>
+
+      <div class="col-lg-3 col-md-6 mt-5 mt-md-0">
+        <div class="member" data-aos="zoom-in" data-aos-delay="200">
+          <div class="pic"><img src="assets/img/team/team-2.png" class="img-fluid" alt=""></div>
+          <div class="member-info">
+            <center>
+            <h4>Juan Camargo</h4>
+            <span>Artist graphic digital</span>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </center>
+      <div class="col-lg-3 col-md-6 mt-5 mt-lg-0">
+        <div class="member" data-aos="zoom-in" data-aos-delay="300">
+          <div class="pic"><img src="assets/img/team/team-3.png" class="img-fluid" alt=""></div>
+          <div class="member-info">
+            <center>
+            <h4>Dement Cat</h4>
+            <span>Influencer</span>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </center>
+      <div class="col-lg-3 col-md-6 mt-5 mt-lg-0">
+        <div class="member" data-aos="zoom-in" data-aos-delay="400">
+          <div class="pic"><img src="assets/img/team/team-4.png" class="img-fluid" alt=""></div>
+          <div class="member-info">
+            <center>
+            <h4>Insane Cats</h4>
+            <span>CEO</span>
+            <div class="social">
+              <a href="http://goolgle.com"><i class="bi bi-twitter"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </center>
+    </div>
+
+  </div>
+</section><!-- End Team Section -->
+<section>
+
+
+ <!-- ABOUT -->
+    <section class="about full-screen d-lg-flex justify-content-center align-items-center" id="Tokenomics">
+        <div class="container">
+            
+                
+                <center><h1>Tokenomics</h1></center>
+                    
+                  <img src="images/undraw/tokenomics.png" width="1150" height="750"  alt="" class="img-fluid">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</section>  
+<br>
+<br> 
+<br>
+<br> 
+
+
+</section>
+<section>
+
+
+<!-- ABOUT -->
+   <section class="about full-screen d-lg-flex justify-content-center align-items-center" id="History">
+       <div class="container">
+           <center> 
+              
+<h1> content not suitable for healthy people</h1>
+</center>
+            <img src="images/undraw/history.png" width="1150" height="750"  alt="" class="img-fluid">
+            <br>
+<br> 
+<br>
+ 
+            <h1>History of dement cats society </h1>   
+               
+            <h5> "What the hell does a man do when his will is broken? What is a man without a will? Can he even be called a man or a human being? But, even more... What does a man do when he has had everything, when he has touched the sky and out of nowhere kisses the ground loudly? "
+
+
+
+Mr. DK success does not give the right to take away people's lives we are not a simple algorithmic sequence that you can delete and rebuild behind bad decisions many things have happened terrible situations (a father, a brother, a son, a daughter a mother ) can not lose his life for nothing; we all know that money is a vanity but ironically we make the mistake of becoming wolves to the fact and it turns out that we are only sheep in the slaughterhouse in the hands of unscrupulous people and bandits, today we are here as a nation to do not discourage them we are going to make up for their losses and give them a new vision of life, we are not god nor do we play dice alone we are the light that illuminates your path so that you do not get lost in the shadows
+
+
+
+I just found out about a ferocious crime From a rich cargo of Satan's blood. woof woof amen! My conscience was ready When the meat exploded. Never in my life had I been hit so hard. Blinding acetylene points. They shouldn't be winning. ...god always so "impartial"!
+
+
+
+
+Anonymous open letter</h5>
+
+</center>
+                
+
+                   </div>
+               </div>
+
+           </div>
+       </div>
+   </section>
+
+</section>  
+
+
+<!-- CONTACT -->
+    <section class="contact py-5" id="contact">
+      <div class="container">
+        <center>
+          <img src="images/undraw/contact.png" width="1750" height="950"  alt="" class="img-fluid">
+          <a href="https://twitter.com/" class="btn custom-btn custom-btn-bg custom-btn-link">Twitter </a>
+          <a href="https://www.instagram.com/" class="btn custom-btn custom-btn-bg custom-btn-link">Instagram </a>
+          <a href="https://discord.com/" class="btn custom-btn custom-btn-bg custom-btn-link">Discord </a>      
+        </center>
+    </section>
+
+    <!-- FOOTER -->
+     <footer class="footer py-5">
+          <div class="container">
+               <div class="row">
+
+                    <div class="col-lg-12 col-12">                                
+                        <p class="copyright-text text-center">Copyright &copy; 2022 Dement Cats Society. All rights reserved</p>
+                        <p class="copyright-text text-center">Designed by <a rel="nofollow" href="https://www.instagram.com/dementcatssociety">Dement Cats Society</a></p>
+                    </div>
+                    
+               </div>
+          </div>
+     </footer>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/Headroom.js"></script>
+    <script src="js/jQuery.headroom.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/smoothscroll.js"></script>
+    <script src="js/custom.js"></script>
+
+  
+  </style>
+  <script>
+    console.clear()
+console.log('lsakdfalskjdflnksd')
+
+const config = {
+  src: './open-peeps-sheet.png',
+  rows: 15,
+  cols: 7
+}
+
+// UTILS
+
+const randomRange = (min, max) => min + Math.random() * (max - min)
+
+const randomIndex = (array) => randomRange(0, array.length) | 0
+
+const removeFromArray = (array, i) => array.splice(i, 1)[0]
+
+const removeItemFromArray = (array, item) => removeFromArray(array, array.indexOf(item))
+
+const removeRandomFromArray = (array) => removeFromArray(array, randomIndex(array))
+
+const getRandomFromArray = (array) => (
+  array[randomIndex(array) | 0]
+)
+
+// TWEEN FACTORIES
+
+const resetPeep = ({ stage, peep }) => {
+  const direction = Math.random() > 0.5 ? 1 : -1
+  // using an ease function to skew random to lower values to help hide that peeps have no legs
+  const offsetY = 100 - 250 * gsap.parseEase('power2.in')(Math.random())
+  const startY = stage.height - peep.height + offsetY
+  let startX
+  let endX
+  
+  if (direction === 1) {
+    startX = -peep.width
+    endX = stage.width
+    peep.scaleX = 1
+  } else {
+    startX = stage.width + peep.width
+    endX = 0
+    peep.scaleX = -1
+  }
+  
+  peep.x = startX
+  peep.y = startY
+  peep.anchorY = startY
+  
+  return {
+    startX,
+    startY,
+    endX
+  }
+}
+
+const normalWalk = ({ peep, props }) => {
+  const {
+    startX,
+    startY,
+    endX
+  } = props
+
+  const xDuration = 10
+  const yDuration = 0.25
+  
+  const tl = gsap.timeline()
+  tl.timeScale(randomRange(0.5, 1.5))
+  tl.to(peep, {
+    duration: xDuration,
+    x: endX,
+    ease: 'none'
+  }, 0)
+  tl.to(peep, {
+    duration: yDuration,
+    repeat: xDuration / yDuration,
+    yoyo: true,
+    y: startY - 10
+  }, 0)
+    
+  return tl
+}
+
+const walks = [
+  normalWalk,
+]
+
+// CLASSES
+
+class Peep {
+  constructor({
+    image,
+    rect,
+  }) {
+    this.image = image
+    this.setRect(rect)
+    
+    this.x = 0
+    this.y = 0
+    this.anchorY = 0
+    this.scaleX = 1
+    this.walk = null
+  }
+  
+  setRect (rect) {
+    this.rect = rect
+    this.width = rect[2]
+    this.height = rect[3]
+    
+    this.drawArgs = [
+      this.image,
+      ...rect,
+      0, 0, this.width, this.height
+    ]  
+  }
+  
+  render (ctx) {
+    ctx.save()
+    ctx.translate(this.x, this.y)
+    ctx.scale(this.scaleX, 1)
+    ctx.drawImage(...this.drawArgs)
+    ctx.restore()
+  }
+}
+
+// MAIN
+
+const img = document.createElement('img')
+img.onload = init
+img.src = config.src
+
+const canvas = document.querySelector('#canvas')
+const ctx = canvas.getContext('2d')
+
+const stage = {
+  width: 0,
+  height: 0,
+}
+
+const allPeeps = []
+const availablePeeps = []
+const crowd = []
+
+function init () {  
+  createPeeps()
+  
+  // resize also (re)populates the stage
+  resize()
+
+  gsap.ticker.add(render)
+  window.addEventListener('resize', resize)
+}
+
+function createPeeps () {
+  const {
+    rows,
+    cols
+  } = config
+  const {
+    naturalWidth: width,
+    naturalHeight: height
+  } = img
+  const total = rows * cols
+  const rectWidth = width / rows
+  const rectHeight = height / cols
+  
+  for (let i = 0; i < total; i++) {
+    allPeeps.push(new Peep({
+      image: img,
+      rect: [
+        (i % rows) * rectWidth,
+        (i / rows | 0) * rectHeight,
+        rectWidth,
+        rectHeight,
+      ]
+    }))
+  }  
+}
+
+function resize () {
+  stage.width = canvas.clientWidth
+  stage.height = canvas.clientHeight
+  canvas.width = stage.width * devicePixelRatio
+  canvas.height = stage.height * devicePixelRatio
+  
+  crowd.forEach((peep) => {
+    peep.walk.kill()
+  })
+  
+  crowd.length = 0
+  availablePeeps.length = 0
+  availablePeeps.push(...allPeeps)
+  
+  initCrowd()
+}
+
+function initCrowd () {
+  while (availablePeeps.length) {
+    // setting random tween progress spreads the peeps out
+    addPeepToCrowd().walk.progress(Math.random())
+  }
+}
+
+function addPeepToCrowd () {
+  const peep = removeRandomFromArray(availablePeeps)
+  const walk = getRandomFromArray(walks)({
+    peep,
+    props: resetPeep({
+      peep,
+      stage,
+    })
+  }).eventCallback('onComplete', () => {
+    removePeepFromCrowd(peep)
+    addPeepToCrowd()
+  })
+  
+  peep.walk = walk
+  
+  crowd.push(peep)
+  crowd.sort((a, b) => a.anchorY - b.anchorY)
+  
+  return peep
+}
+
+function removePeepFromCrowd (peep) {
+  removeItemFromArray(crowd, peep)
+  availablePeeps.push(peep)
+}
+
+function render () {
+  canvas.width = canvas.width
+  ctx.save()
+  ctx.scale(devicePixelRatio, devicePixelRatio)
+  
+  crowd.forEach((peep) => {
+    peep.render(ctx)
+  })
+  
+  ctx.restore()
+}
+  </script>
+
+ 
 </html>

@@ -69,7 +69,7 @@ export const ResponsiveWrapper = styled.div`
 export const StyledLogo = styled.img`
   width: 300px;
   @media (min-width: 367px) {
-    width: 1400px; 
+    width: 00px; 
   }
   transition: width 0.5s;
   transition: height 0.5s;
@@ -288,7 +288,7 @@ function App() {
                       window.open(CONFIG.MARKETPLACE_LINK3, "_blank");
                     }}
   >
-Contrato
+Contract
 {CONFIG.MARKETPLACE}
               </StyledButton>
             </span>
@@ -316,14 +316,14 @@ Contrato
                 <s.TextTitle
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
-                  1 {CONFIG.SYMBOL} Cuesta {CONFIG.DISPLAY_COST}{" "}
+                  1 {CONFIG.SYMBOL} Cost {CONFIG.DISPLAY_COST}{" "}
                   {CONFIG.NETWORK.SYMBOL}.
                 </s.TextTitle>
                 <s.SpacerXSmall />
                 <s.TextDescription
                   style={{ textAlign: "center", color: "var(--accent-text)" }}
                 >
-                  Excluyendo tarifas de gas.
+                  Excluding gas fees.
                 </s.TextDescription>
                 <s.SpacerSmall />
                 {blockchain.account === "" ||
@@ -335,7 +335,7 @@ Contrato
                         color: "var(--accent-text)",
                       }}
                     >
-                      Conectese a la red {CONFIG.NETWORK.NAME} network
+                      Connect  {CONFIG.NETWORK.NAME} network
                     </s.TextDescription>
                     <s.SpacerSmall />
                     <StyledButton
@@ -439,9 +439,9 @@ Contrato
               color: "var(--primary-text)",
             }}
           >
-            Asegúrate de estar conectado a la red correcta. (
-            {CONFIG.NETWORK.NAME} Mainnet) y la dirección correcta. Tenga en cuenta:
-             Una vez que realice la compra, no podrá deshacer esta acción.
+           Make sure you are connected to the correct network. (
+            {CONFIG.NETWORK.NAME} Mainnet) ythe right direction. Keep in mind:
+              Once you make the purchase, you will not be able to undo this action.
           </s.TextDescription>
           <s.SpacerSmall />
           <s.TextDescription
@@ -450,9 +450,9 @@ Contrato
               color: "var(--primary-text)",
             }}
           >
-            Hemos establecido el límite de gas en {CONFIG.GAS_LIMIT} para que el contrato
-             acuñe con éxito su NFT. Le recomendamos que no baje el
-             límite de gas.
+            We have set the gas limit at {CONFIG.GAS_LIMIT}so that the contract
+              successfully mint your NFT. We recommend that you do not download the
+              gas limit.
           </s.TextDescription>
 
           
@@ -462,7 +462,7 @@ Contrato
               color: "var(--secondary-text)",
             }}
           >
-           YETIMANIA CLUB ES UNA COLLECCION ECHA 100% EN ESPAÑOL APOYA NUESTA INICIATIVA
+           DON'T STAY OUT GET YOUR DEMENT CAT AND BE PART OF THE INSANE SOCIETY
           </s.TextDescription>
 
 
